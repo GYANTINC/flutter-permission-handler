@@ -110,14 +110,16 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
   @PermissionGroup
   private static int parseManifestName(String permission) {
     switch (permission) {
-    case Manifest.permission.CAMERA:
-      return PERMISSION_GROUP_CAMERA;
-    case Manifest.permission.ACCESS_COARSE_LOCATION:
-    case Manifest.permission.ACCESS_FINE_LOCATION:
-      return PERMISSION_GROUP_LOCATION;
-    case Manifest.permission.RECORD_AUDIO:
-      return PERMISSION_GROUP_MICROPHONE;
-    default:
+      case Manifest.permission.CAMERA:
+        return PERMISSION_GROUP_CAMERA;
+      case Manifest.permission.ACCESS_COARSE_LOCATION:
+      case Manifest.permission.ACCESS_FINE_LOCATION:
+        return PERMISSION_GROUP_LOCATION;
+      case Manifest.permission.RECORD_AUDIO:
+        return PERMISSION_GROUP_MICROPHONE;
+      case Manifest.permission.READ_EXTERNAL_STORAGE:
+        return PERMISSION_GROUP_PHOTOS;
+      default:
       return PERMISSION_GROUP_UNKNOWN;
     }
   }
@@ -397,28 +399,34 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
 
     switch (permission) {
 
-    case PERMISSION_GROUP_CAMERA:
-      if (hasPermissionInManifest(Manifest.permission.CAMERA))
-        permissionNames.add(Manifest.permission.CAMERA);
-      break;
+      case PERMISSION_GROUP_CAMERA:
+        if (hasPermissionInManifest(Manifest.permission.CAMERA))
+          permissionNames.add(Manifest.permission.CAMERA);
+        break;
 
-    case PERMISSION_GROUP_LOCATION_ALWAYS:
-    case PERMISSION_GROUP_LOCATION_WHEN_IN_USE:
-    case PERMISSION_GROUP_LOCATION:
-      if (hasPermissionInManifest(Manifest.permission.ACCESS_COARSE_LOCATION))
-        permissionNames.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+      case PERMISSION_GROUP_LOCATION_ALWAYS:
+      case PERMISSION_GROUP_LOCATION_WHEN_IN_USE:
+      case PERMISSION_GROUP_LOCATION:
+        if (hasPermissionInManifest(Manifest.permission.ACCESS_COARSE_LOCATION))
+          permissionNames.add(Manifest.permission.ACCESS_COARSE_LOCATION);
 
-      if (hasPermissionInManifest(Manifest.permission.ACCESS_FINE_LOCATION))
-        permissionNames.add(Manifest.permission.ACCESS_FINE_LOCATION);
-      break;
+        if (hasPermissionInManifest(Manifest.permission.ACCESS_FINE_LOCATION))
+          permissionNames.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        break;
 
-    case PERMISSION_GROUP_MICROPHONE:
-      if (hasPermissionInManifest(Manifest.permission.RECORD_AUDIO))
-        permissionNames.add(Manifest.permission.RECORD_AUDIO);
-      break;
+      case PERMISSION_GROUP_MICROPHONE:
+        if (hasPermissionInManifest(Manifest.permission.RECORD_AUDIO))
+          permissionNames.add(Manifest.permission.RECORD_AUDIO);
+        break;
 
-    case PERMISSION_GROUP_UNKNOWN:
-      return null;
+      case PERMISSION_GROUP_PHOTOS:
+        if (hasPermissionInManifest(Manifest.permission.READ_EXTERNAL_STORAGE))
+          permissionNames.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        break;
+
+
+        case PERMISSION_GROUP_UNKNOWN:
+          return null;
     }
 
     return permissionNames;
