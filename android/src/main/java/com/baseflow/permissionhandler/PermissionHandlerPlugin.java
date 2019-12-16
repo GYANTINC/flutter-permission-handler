@@ -40,19 +40,16 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
   // PERMISSION_GROUP
   private static final int PERMISSION_GROUP_CAMERA = 0;
   private static final int PERMISSION_GROUP_LOCATION = 1;
-  private static final int PERMISSION_GROUP_LOCATION_ALWAYS = 2;
-  private static final int PERMISSION_GROUP_LOCATION_WHEN_IN_USE = 3;
-  private static final int PERMISSION_GROUP_MICROPHONE = 4;
-  private static final int PERMISSION_GROUP_PHOTOS = 5;
-  private static final int PERMISSION_GROUP_UNKNOWN = 6;
+  private static final int PERMISSION_GROUP_MICROPHONE = 2;
+  private static final int PERMISSION_GROUP_PHOTOS = 3;
+  private static final int PERMISSION_GROUP_UNKNOWN = 4;
 
   private PermissionHandlerPlugin(Registrar mRegistrar) {
     this.mRegistrar = mRegistrar;
   }
 
   @Retention(RetentionPolicy.SOURCE)
-  @IntDef({ PERMISSION_GROUP_CAMERA, PERMISSION_GROUP_LOCATION, PERMISSION_GROUP_LOCATION_ALWAYS,
-      PERMISSION_GROUP_LOCATION_WHEN_IN_USE, PERMISSION_GROUP_MICROPHONE, PERMISSION_GROUP_PHOTOS,
+  @IntDef({ PERMISSION_GROUP_CAMERA, PERMISSION_GROUP_LOCATION, PERMISSION_GROUP_MICROPHONE, PERMISSION_GROUP_PHOTOS,
       PERMISSION_GROUP_UNKNOWN, })
   private @interface PermissionGroup {
   }
@@ -110,16 +107,16 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
   @PermissionGroup
   private static int parseManifestName(String permission) {
     switch (permission) {
-      case Manifest.permission.CAMERA:
-        return PERMISSION_GROUP_CAMERA;
-      case Manifest.permission.ACCESS_COARSE_LOCATION:
-      case Manifest.permission.ACCESS_FINE_LOCATION:
-        return PERMISSION_GROUP_LOCATION;
-      case Manifest.permission.RECORD_AUDIO:
-        return PERMISSION_GROUP_MICROPHONE;
-      case Manifest.permission.READ_EXTERNAL_STORAGE:
-        return PERMISSION_GROUP_PHOTOS;
-      default:
+    case Manifest.permission.CAMERA:
+      return PERMISSION_GROUP_CAMERA;
+    case Manifest.permission.ACCESS_COARSE_LOCATION:
+    case Manifest.permission.ACCESS_FINE_LOCATION:
+      return PERMISSION_GROUP_LOCATION;
+    case Manifest.permission.RECORD_AUDIO:
+      return PERMISSION_GROUP_MICROPHONE;
+    case Manifest.permission.READ_EXTERNAL_STORAGE:
+      return PERMISSION_GROUP_PHOTOS;
+    default:
       return PERMISSION_GROUP_UNKNOWN;
     }
   }
@@ -217,8 +214,7 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
       }
     }
 
-    if (permission == PERMISSION_GROUP_LOCATION || permission == PERMISSION_GROUP_LOCATION_ALWAYS
-        || permission == PERMISSION_GROUP_LOCATION_WHEN_IN_USE) {
+    if (permission == PERMISSION_GROUP_LOCATION) {
       if (!isLocationServiceEnabled(context)) {
         return PERMISSION_STATUS_DISABLED;
       }
@@ -236,8 +232,7 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
       return SERVICE_STATUS_UNKNOWN;
     }
 
-    if (permission == PERMISSION_GROUP_LOCATION || permission == PERMISSION_GROUP_LOCATION_ALWAYS
-        || permission == PERMISSION_GROUP_LOCATION_WHEN_IN_USE) {
+    if (permission == PERMISSION_GROUP_LOCATION) {
       return isLocationServiceEnabled(context) ? SERVICE_STATUS_ENABLED : SERVICE_STATUS_DISABLED;
     }
 
@@ -341,14 +336,6 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
           permissionStatus = PERMISSION_STATUS_DISABLED;
         }
 
-        if (!mRequestResults.containsKey(PERMISSION_GROUP_LOCATION_ALWAYS)) {
-          mRequestResults.put(PERMISSION_GROUP_LOCATION_ALWAYS, permissionStatus);
-        }
-
-        if (!mRequestResults.containsKey(PERMISSION_GROUP_LOCATION_WHEN_IN_USE)) {
-          mRequestResults.put(PERMISSION_GROUP_LOCATION_WHEN_IN_USE, permissionStatus);
-        }
-
         mRequestResults.put(permission, permissionStatus);
       } else if (!mRequestResults.containsKey(permission)) {
         mRequestResults.put(permission, toPermissionStatus(grantResults[i]));
@@ -399,34 +386,31 @@ public class PermissionHandlerPlugin implements MethodCallHandler {
 
     switch (permission) {
 
-      case PERMISSION_GROUP_CAMERA:
-        if (hasPermissionInManifest(Manifest.permission.CAMERA))
-          permissionNames.add(Manifest.permission.CAMERA);
-        break;
+    case PERMISSION_GROUP_CAMERA:
+      if (hasPermissionInManifest(Manifest.permission.CAMERA))
+        permissionNames.add(Manifest.permission.CAMERA);
+      break;
 
-      case PERMISSION_GROUP_LOCATION_ALWAYS:
-      case PERMISSION_GROUP_LOCATION_WHEN_IN_USE:
-      case PERMISSION_GROUP_LOCATION:
-        if (hasPermissionInManifest(Manifest.permission.ACCESS_COARSE_LOCATION))
-          permissionNames.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+    case PERMISSION_GROUP_LOCATION:
+      if (hasPermissionInManifest(Manifest.permission.ACCESS_COARSE_LOCATION))
+        permissionNames.add(Manifest.permission.ACCESS_COARSE_LOCATION);
 
-        if (hasPermissionInManifest(Manifest.permission.ACCESS_FINE_LOCATION))
-          permissionNames.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        break;
+      if (hasPermissionInManifest(Manifest.permission.ACCESS_FINE_LOCATION))
+        permissionNames.add(Manifest.permission.ACCESS_FINE_LOCATION);
+      break;
 
-      case PERMISSION_GROUP_MICROPHONE:
-        if (hasPermissionInManifest(Manifest.permission.RECORD_AUDIO))
-          permissionNames.add(Manifest.permission.RECORD_AUDIO);
-        break;
+    case PERMISSION_GROUP_MICROPHONE:
+      if (hasPermissionInManifest(Manifest.permission.RECORD_AUDIO))
+        permissionNames.add(Manifest.permission.RECORD_AUDIO);
+      break;
 
-      case PERMISSION_GROUP_PHOTOS:
-        if (hasPermissionInManifest(Manifest.permission.READ_EXTERNAL_STORAGE))
-          permissionNames.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-        break;
+    case PERMISSION_GROUP_PHOTOS:
+      if (hasPermissionInManifest(Manifest.permission.READ_EXTERNAL_STORAGE))
+        permissionNames.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+      break;
 
-
-        case PERMISSION_GROUP_UNKNOWN:
-          return null;
+    case PERMISSION_GROUP_UNKNOWN:
+      return null;
     }
 
     return permissionNames;

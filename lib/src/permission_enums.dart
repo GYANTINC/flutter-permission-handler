@@ -88,33 +88,23 @@ class PermissionGroup {
   static const PermissionGroup camera = PermissionGroup._(0);
 
   /// Android: Fine and Coarse Location
-  /// iOS: CoreLocation (Always and WhenInUse)
+  /// iOS: CoreLocation (WhenInUse)
   static const PermissionGroup location = PermissionGroup._(1);
-
-  /// Android: Fine and Coarse Location
-  /// iOS: CoreLocation - Always
-  static const PermissionGroup locationAlways = PermissionGroup._(2);
-
-  /// Android: Fine and Coarse Location
-  /// iOS: CoreLocation - WhenInUse
-  static const PermissionGroup locationWhenInUse = PermissionGroup._(3);
 
   /// Android: Microphone
   /// iOS: Microphone
-  static const PermissionGroup microphone = PermissionGroup._(4);
+  static const PermissionGroup microphone = PermissionGroup._(2);
 
   /// Android: Nothing
   /// iOS: Photos
-  static const PermissionGroup photos = PermissionGroup._(5);
+  static const PermissionGroup photos = PermissionGroup._(3);
 
   /// The unknown permission only used for return type, never requested
-  static const PermissionGroup unknown = PermissionGroup._(6);
+  static const PermissionGroup unknown = PermissionGroup._(4);
 
   static const List<PermissionGroup> values = <PermissionGroup>[
     camera,
     location,
-    locationAlways,
-    locationWhenInUse,
     microphone,
     photos,
     unknown,
@@ -123,8 +113,6 @@ class PermissionGroup {
   static const List<String> _names = <String>[
     'camera',
     'location',
-    'locationAlways',
-    'locationWhenInUse',
     'microphone',
     'photos',
     'unknown',
